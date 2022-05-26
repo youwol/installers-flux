@@ -9,7 +9,6 @@ export async function install(installer: Installer): Promise<Installer> {
                 contextMenuActions,
                 assetPreviews,
                 applications,
-                openWithApps,
                 applicationsData: {
                     '@youwol/flux-builder': {
                         toolboxes: [
