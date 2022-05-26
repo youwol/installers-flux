@@ -31,25 +31,6 @@ export const applications: string[] = [
     '@youwol/flux-runner',
 ]
 
-export function openWithApps({ node }) {
-    return [
-        {
-            applicable: () => {
-                return node.kind == 'flux-project'
-            },
-            cdnPackage: '@youwol/flux-builder',
-            parameters: { id: node.rawId },
-        },
-        {
-            applicable: () => {
-                return node.kind == 'flux-project'
-            },
-            cdnPackage: '@youwol/flux-runner',
-            parameters: { id: node.rawId },
-        },
-    ]
-}
-
 async function newFluxProject(parentNode, explorer, assetsGtwClient) {
     explorer.newAsset({
         parentNode: parentNode,

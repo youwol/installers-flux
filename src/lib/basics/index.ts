@@ -1,14 +1,7 @@
-import {
-    applications,
-    assetPreviews,
-    contextMenuActions,
-    openWithApps,
-} from './installer'
-import { Core } from '@youwol/platform-essentials'
+import { applications, assetPreviews, contextMenuActions } from './installer'
+import { Installer } from '@youwol/os-core'
 
-export async function install(
-    installer: Core.Installer,
-): Promise<Core.Installer> {
+export async function install(installer: Installer): Promise<Installer> {
     return installer.with({
         fromManifests: [
             {
