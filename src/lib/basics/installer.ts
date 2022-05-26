@@ -1,13 +1,13 @@
-import { Explorer } from '@youwol/platform-essentials'
+import { ExplorerBackend } from '@youwol/http-clients'
 
 export function contextMenuActions({ node, explorer, assetsGtwClient }) {
     return [
         {
             name: 'New flux project',
-            icon: 'fas fa-play',
+            icon: 'fas fa-tools',
             authorized: true,
             exe: async () => newFluxProject(node, explorer, assetsGtwClient),
-            applicable: () => node instanceof Explorer.FolderNode,
+            applicable: () => ExplorerBackend.isInstanceOfFolderResponse(node),
         },
         {
             name: 'Duplicate flux project',
@@ -16,7 +16,7 @@ export function contextMenuActions({ node, explorer, assetsGtwClient }) {
             exe: async () =>
                 duplicateFluxProject(node, explorer, assetsGtwClient),
             applicable: () =>
-                node instanceof Explorer.ItemNode &&
+                ExplorerBackend.isInstanceOfItemResponse(node) &&
                 node.kind == 'flux-project',
         },
     ]
@@ -35,7 +35,7 @@ async function newFluxProject(parentNode, explorer, assetsGtwClient) {
     explorer.newAsset({
         parentNode: parentNode,
         pendingName: 'new flux project',
-        kind: 'flux-project',
+        type: 'flux-project',
         request: assetsGtwClient.flux.newProject$({
             queryParameters: { folderId: parentNode.id },
             body: { name: 'new flux project' },
@@ -52,7 +52,7 @@ async function duplicateFluxProject(projectNode, explorer, assetsGtwClient) {
             explorer.newAsset({
                 parentNode: parentNode,
                 pendingName: `duplicating ${projectNode.name}`,
-                kind: 'flux-project',
+                type: 'flux-project',
                 request: assetsGtwClient.flux.duplicate$({
                     projectId: projectNode.rawId,
                     queryParameters: { folderId: parentNode.folderId },
