@@ -2,6 +2,8 @@ import { child$, VirtualDOM } from '@youwol/flux-view'
 import { Button } from '@youwol/fv-button'
 import {
     AssetsGateway,
+    AssetsBackend,
+    FluxBackend,
     dispatchHTTPErrors,
     HTTPError,
     raiseHTTPErrors,
@@ -27,7 +29,7 @@ import {
     tap,
 } from 'rxjs/operators'
 
-export function getActions(asset: AssetsGateway.Asset) {
+export function getActions(asset: AssetsBackend.GetAssetResponse) {
     const classes = 'fv-btn fv-btn-secondary mx-1 '
 
     const runButtonState = new Button.State()
@@ -77,14 +79,14 @@ class Lib {
 
 export class FluxDependenciesState {
     error$ = new Subject<HTTPError>()
-    accessInfo$ = new AssetsGateway.AssetsGatewayClient().assetsDeprecated
-        .getAccess$(this.asset.assetId)
+    accessInfo$ = new AssetsGateway.AssetsGatewayClient().assets
+        .queryAccessInfo$({ assetId: this.asset.assetId })
         .pipe(raiseHTTPErrors(), share())
 
     userPicks = {}
     libsVersionsCache = {}
 
-    requirements$ = new ReplaySubject<AssetsGateway.Requirements>()
+    requirements$ = new ReplaySubject<FluxBackend.Requirements>()
     selectedPacks$ = new BehaviorSubject([])
 
     // dependencies$ : the dependencies of the project (included explicit update): { $libName : $selectedVersion }
@@ -116,12 +118,12 @@ export class FluxDependenciesState {
 
     assetsGtwClient = new AssetsGateway.AssetsGatewayClient()
 
-    constructor(public readonly asset: AssetsGateway.Asset) {
+    constructor(public readonly asset: AssetsBackend.GetAssetResponse) {
         this.userPicks = {}
         this.libsVersionsCache = {}
 
-        this.assetsGtwClient.rawDeprecated.fluxProject
-            .getProject$(asset.rawId)
+        this.assetsGtwClient.flux
+            .getProject$({ projectId: asset.rawId })
             .pipe(dispatchHTTPErrors(this.error$))
             .subscribe((project) => {
                 this.requirements$.next(project.requirements)
@@ -134,8 +136,8 @@ export class FluxDependenciesState {
             if (lib.id) {
                 return this.libsVersionsCache[lib.id]
                     ? of(this.libsVersionsCache[lib.id])
-                    : this.assetsGtwClient.rawDeprecated.package
-                          .getMetadata$(lib.id)
+                    : this.assetsGtwClient.cdn
+                          .getLibraryInfo$({ libraryId: lib.id })
                           .pipe(
                               tap(
                                   (library) =>
@@ -303,13 +305,13 @@ export class FluxDependenciesState {
             libraries: librariesVersion,
         }
 
-        this.assetsGtwClient.rawDeprecated.fluxProject
-            .updateMetadata$(this.asset.rawId, body)
+        this.assetsGtwClient.flux
+            .updateMetadata$({ projectId: this.asset.rawId, body })
             .pipe(
                 dispatchHTTPErrors(this.error$),
                 mergeMap(() =>
-                    this.assetsGtwClient.rawDeprecated.fluxProject
-                        .getProject$(this.asset.rawId)
+                    this.assetsGtwClient.flux
+                        .getProject$({ projectId: this.asset.rawId })
                         .pipe(dispatchHTTPErrors(this.error$)),
                 ),
             )
@@ -342,10 +344,10 @@ export class FluxDependenciesView implements VirtualDOM {
     public readonly onclick = (event) => event.stopPropagation()
     public readonly children: Array<VirtualDOM>
 
-    public readonly asset: AssetsGateway.Asset
+    public readonly asset: AssetsBackend.GetAssetResponse
     public readonly state: FluxDependenciesState
 
-    constructor(params: { asset: AssetsGateway.Asset }) {
+    constructor(params: { asset: AssetsBackend.GetAssetResponse }) {
         Object.assign(this, params)
         this.state = new FluxDependenciesState(this.asset)
         this.state.versions$.subscribe((d) => {
