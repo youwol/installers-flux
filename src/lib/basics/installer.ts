@@ -1,4 +1,8 @@
-import { ExplorerBackend } from '@youwol/http-clients'
+import {
+    AssetsGateway,
+    ExplorerBackend,
+    raiseHTTPErrors,
+} from '@youwol/http-clients'
 
 export function contextMenuActions({ node, explorer, assetsGtwClient }) {
     return [
@@ -36,16 +40,21 @@ async function newFluxProject(parentNode, explorer, assetsGtwClient) {
         parentNode: parentNode,
         pendingName: 'new flux project',
         type: 'flux-project',
-        request: assetsGtwClient.flux.newProject$({
+        response$: assetsGtwClient.flux.newProject$({
             queryParameters: { folderId: parentNode.id },
             body: { name: 'new flux project' },
         }),
     })
 }
 
-async function duplicateFluxProject(projectNode, explorer, assetsGtwClient) {
-    assetsGtwClient.treedb
+async function duplicateFluxProject(
+    projectNode,
+    explorer,
+    assetsGtwClient: AssetsGateway.Client,
+) {
+    assetsGtwClient.explorer
         .getItem$({ itemId: projectNode.id })
+        .pipe(raiseHTTPErrors())
         .subscribe((response) => {
             const groupTree = explorer.groupsTree[projectNode.groupId]
             const parentNode = groupTree.getNode(response.folderId)
@@ -53,7 +62,7 @@ async function duplicateFluxProject(projectNode, explorer, assetsGtwClient) {
                 parentNode: parentNode,
                 pendingName: `duplicating ${projectNode.name}`,
                 type: 'flux-project',
-                request: assetsGtwClient.flux.duplicate$({
+                response$: assetsGtwClient.flux.duplicate$({
                     projectId: projectNode.rawId,
                     queryParameters: { folderId: parentNode.folderId },
                 }),
