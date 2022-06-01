@@ -2,12 +2,12 @@ import { child$, VirtualDOM } from '@youwol/flux-view'
 import { Button } from '@youwol/fv-button'
 import {
     AssetsGateway,
-    AssetsBackend,
     FluxBackend,
     dispatchHTTPErrors,
     HTTPError,
     raiseHTTPErrors,
 } from '@youwol/http-clients'
+import { AssetLightDescription } from '@youwol/os-core'
 import {
     BehaviorSubject,
     combineLatest,
@@ -29,7 +29,7 @@ import {
     tap,
 } from 'rxjs/operators'
 
-export function getActions(asset: AssetsBackend.GetAssetResponse) {
+export function getActions(asset: AssetLightDescription) {
     const classes = 'fv-btn fv-btn-secondary mx-1 '
 
     const runButtonState = new Button.State()
@@ -118,7 +118,7 @@ export class FluxDependenciesState {
 
     assetsGtwClient = new AssetsGateway.AssetsGatewayClient()
 
-    constructor(public readonly asset: AssetsBackend.GetAssetResponse) {
+    constructor(public readonly asset: AssetLightDescription) {
         this.userPicks = {}
         this.libsVersionsCache = {}
 
@@ -344,10 +344,10 @@ export class FluxDependenciesView implements VirtualDOM {
     public readonly onclick = (event) => event.stopPropagation()
     public readonly children: Array<VirtualDOM>
 
-    public readonly asset: AssetsBackend.GetAssetResponse
+    public readonly asset: AssetLightDescription
     public readonly state: FluxDependenciesState
 
-    constructor(params: { asset: AssetsBackend.GetAssetResponse }) {
+    constructor(params: { asset: AssetLightDescription }) {
         Object.assign(this, params)
         this.state = new FluxDependenciesState(this.asset)
         this.state.versions$.subscribe((d) => {
