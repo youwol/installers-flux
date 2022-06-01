@@ -3,6 +3,8 @@ import {
     ExplorerBackend,
     raiseHTTPErrors,
 } from '@youwol/http-clients'
+import { FluxDependenciesView } from './flux-dependencies.view'
+import { AssetLightDescription } from '@youwol/os-core/dist'
 
 export function contextMenuActions({ node, explorer, assetsGtwClient }) {
     return [
@@ -26,8 +28,19 @@ export function contextMenuActions({ node, explorer, assetsGtwClient }) {
     ]
 }
 
-export function assetPreviews() {
-    return []
+export function assetPreviews({ asset }: { asset: AssetLightDescription }) {
+    return [
+        {
+            icon: 'fas fa-compress-arrows-alt',
+            name: 'Dependencies',
+            exe: () => {
+                return new FluxDependenciesView({ asset })
+            },
+            applicable: () => {
+                return asset.kind == 'flux-project'
+            },
+        },
+    ]
 }
 
 export const applications: string[] = [
