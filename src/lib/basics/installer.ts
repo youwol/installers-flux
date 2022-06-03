@@ -10,15 +10,15 @@ export function contextMenuActions({ node, explorer, assetsGtwClient }) {
     return [
         {
             name: 'New flux project',
-            icon: 'fas fa-tools',
-            authorized: true,
+            icon: { class: 'fas fa-tools' },
+            enabled: () => true,
             exe: async () => newFluxProject(node, explorer, assetsGtwClient),
             applicable: () => ExplorerBackend.isInstanceOfFolderResponse(node),
         },
         {
             name: 'Duplicate flux project',
-            icon: 'fas fa-clone',
-            authorized: true,
+            icon: { class: 'fas fa-clone' },
+            enabled: () => true,
             exe: async () =>
                 duplicateFluxProject(node, explorer, assetsGtwClient),
             applicable: () =>
