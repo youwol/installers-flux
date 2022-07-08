@@ -1,6 +1,6 @@
 {
     "name": "@youwol/installers-flux",
-    "version": "0.0.1",
+    "version": "0.0.2-wip",
     "description": "Collections of installers for flux",
     "author": "greinisch@youwol.com",
     "keywords": [
