@@ -44,6 +44,7 @@ module.exports = {
             '@youwol/cdn-client': '@youwol/cdn-client',
             '@youwol/flux-view': '@youwol/flux-view',
             '@youwol/http-clients': '@youwol/http-clients',
+            '@youwol/fv-group': '@youwol/fv-group',
             lodash: '_',
             uuid: 'uuid',
         },
