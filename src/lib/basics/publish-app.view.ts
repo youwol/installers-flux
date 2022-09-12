@@ -2,9 +2,8 @@ import { VirtualDOM, HTMLElement$, render } from '@youwol/flux-view'
 import { BehaviorSubject, merge, Observable } from 'rxjs'
 import { Modal } from '@youwol/fv-group'
 import { map, mergeMap, take } from 'rxjs/operators'
-import { CodeIdeState } from '@youwol/fv-code-mirror-editors'
+import { CodeIdeState, TsCodeEditorView } from '@youwol/fv-code-mirror-editors'
 import { FluxBackend, request$, onHTTPErrors } from '@youwol/http-clients'
-import { TsCodeEditorView } from '@youwol/fv-code-mirror-editors/src/lib/ts-code-editor.view'
 
 const defaultMetadata = {
     name: '>TBD<',
@@ -71,7 +70,7 @@ function createEditor(tsSrcs: string, codeEditorsModule) {
     return view
 }
 
-function metadataToSrc(metadata: { [k: string]: any }) {
+function metadataToSrc(metadata: { [k: string]: unknown }) {
     return `return () => (\n\t ${JSON.stringify(metadata, null, 4).replace(
         /">TBD<"/g,
         '',
@@ -104,7 +103,7 @@ export class FindTemplateView implements VirtualDOM {
                         )
                             .pipe(
                                 onHTTPErrors(() => defaultMetadata),
-                                map((respJson: { [k: string]: any }) => {
+                                map((respJson: { [k: string]: unknown }) => {
                                     delete respJson['family']
                                     return {
                                         name: target.value,
@@ -113,7 +112,7 @@ export class FindTemplateView implements VirtualDOM {
                                     }
                                 }),
                             )
-                            .subscribe((resp: { [k: string]: any }) => {
+                            .subscribe((resp: { [k: string]: unknown }) => {
                                 const content = metadataToSrc(resp)
                                 this.codeIdeState.currentFile$.next({
                                     path: `./index${Math.random() * 1e6}.ts`,
