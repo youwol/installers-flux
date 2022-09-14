@@ -1,7 +1,7 @@
 {
     "name": "@youwol/installers-flux",
     "description": "Collections of installers related to the flux application of YouWol",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "author": "greinisch@youwol.com",
     "homepage": "https://github.com/youwol/installers-flux#README.md",
     "main": "dist/@youwol/installers-flux.js",
@@ -60,21 +60,21 @@
         ]
     },
     "dependencies": {
-        "@youwol/os-core": "^0.1.0",
-        "@youwol/flux-view": "^1.0.0",
-        "@youwol/http-clients": "^1.0.1",
+        "@youwol/os-core": "^0.1.1",
+        "@youwol/flux-view": "^1.0.3",
+        "@youwol/http-clients": "^1.0.2",
         "rxjs": "^6.5.5",
-        "@youwol/fv-button": "^0.1.0",
-        "@youwol/fv-code-mirror-editors": "^0.1.0",
-        "@youwol/fv-group": "^0.2.0"
+        "@youwol/fv-button": "^0.1.1",
+        "@youwol/fv-code-mirror-editors": "^0.1.1",
+        "@youwol/fv-group": "^0.2.1"
     },
     "youwol": {
         "cdnDependencies": {
-            "@youwol/os-core": "^0.1.0",
-            "@youwol/flux-view": "^1.0.0",
-            "@youwol/http-clients": "^1.0.1",
+            "@youwol/os-core": "^0.1.1",
+            "@youwol/flux-view": "^1.0.3",
+            "@youwol/http-clients": "^1.0.2",
             "rxjs": "^6.5.5",
-            "@youwol/fv-button": "^0.1.0"
+            "@youwol/fv-button": "^0.1.1"
         }
     }
 }
