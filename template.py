@@ -2,7 +2,7 @@ import shutil
 from pathlib import Path
 
 from youwol.pipelines.pipeline_typescript_weback_npm import Template, PackageType, Dependencies, \
-    RunTimeDeps, generate_template
+    RunTimeDeps, generate_template, AuxiliaryModule, Bundles, MainModule
 from youwol_utils import parse_json
 
 folder_path = Path(__file__).parent
@@ -19,23 +19,35 @@ template = Template(
     author=pkg_json['author'],
     dependencies=Dependencies(
         runTime=RunTimeDeps(
-            load={
-                "@youwol/os-core": "^0.1.1",
+            externals={
+                "@youwol/os-core": "^0.1.2",
                 "@youwol/flux-view": "^1.0.3",
+                "@youwol/cdn-client": "^1.0.2",
                 "@youwol/http-clients": "^1.0.2",
                 "rxjs": "^6.5.5",
                 "@youwol/fv-button": "^0.1.1",
-            },
-            differed={
-                "@youwol/fv-code-mirror-editors": "^0.1.1",
+                "@youwol/fv-code-mirror-editors": "^0.2.1",
                 "@youwol/fv-group": "^0.2.1",
             }
         ),
         devTime={
-            # The two dependencies below are required for typedoc to run properly
-            "@types/lz-string": "^1.3.34",
-            "lz-string": "^1.4.4"
+            "@types/lz-string": "^1.3.34",  # Required to generate doc
+            "lz-string": "^1.4.4",  # Required to generate doc
         }
+    ),
+    bundles=Bundles(
+        mainModule=MainModule(
+            entryFile="./lib/index.ts",
+            loadDependencies=["@youwol/os-core", "@youwol/flux-view", "@youwol/http-clients", "rxjs",
+                              "@youwol/fv-button"]
+        ),
+        auxiliaryModules=[
+            AuxiliaryModule(
+                name='context-menu-publish-app',
+                entryFile="./lib/auxiliary-modules/publish-app/index.ts",
+                loadDependencies=["@youwol/fv-code-mirror-editors", "@youwol/fv-group", "@youwol/cdn-client"]
+            )
+        ],
     ),
     userGuide=True
 )
@@ -52,5 +64,4 @@ for file in ['README.md', '.gitignore', '.npmignore', '.prettierignore', 'LICENS
         src=folder_path / '.template' / file,
         dst=folder_path / file
     )
-
 
