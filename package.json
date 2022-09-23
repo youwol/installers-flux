@@ -1,7 +1,7 @@
 {
     "name": "@youwol/installers-flux",
     "description": "Collections of installers related to the flux application of YouWol",
-    "version": "0.1.1",
+    "version": "0.1.2-wip",
     "author": "greinisch@youwol.com",
     "homepage": "https://github.com/youwol/installers-flux#README.md",
     "main": "dist/@youwol/installers-flux.js",
