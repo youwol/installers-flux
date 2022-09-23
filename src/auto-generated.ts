@@ -1,17 +1,16 @@
 
 const runTimeDependencies = {
-    "load": {
-        "@youwol/os-core": "^0.1.1",
+    "externals": {
+        "@youwol/os-core": "^0.1.2",
         "@youwol/flux-view": "^1.0.3",
+        "@youwol/cdn-client": "^1.0.2",
         "@youwol/http-clients": "^1.0.2",
         "rxjs": "^6.5.5",
-        "@youwol/fv-button": "^0.1.1"
-    },
-    "differed": {
-        "@youwol/fv-code-mirror-editors": "^0.1.1",
+        "@youwol/fv-button": "^0.1.1",
+        "@youwol/fv-code-mirror-editors": "^0.2.1",
         "@youwol/fv-group": "^0.2.1"
     },
-    "includedInBundle": []
+    "includedInBundle": {}
 }
 const externals = {
     "@youwol/os-core": {
@@ -23,6 +22,11 @@ const externals = {
         "commonjs": "@youwol/flux-view",
         "commonjs2": "@youwol/flux-view",
         "root": "@youwol/flux-view_APIv1"
+    },
+    "@youwol/cdn-client": {
+        "commonjs": "@youwol/cdn-client",
+        "commonjs2": "@youwol/cdn-client",
+        "root": "@youwol/cdn-client_APIv1"
     },
     "@youwol/http-clients": {
         "commonjs": "@youwol/http-clients",
@@ -42,7 +46,7 @@ const externals = {
     "@youwol/fv-code-mirror-editors": {
         "commonjs": "@youwol/fv-code-mirror-editors",
         "commonjs2": "@youwol/fv-code-mirror-editors",
-        "root": "@youwol/fv-code-mirror-editors_APIv01"
+        "root": "@youwol/fv-code-mirror-editors_APIv02"
     },
     "@youwol/fv-group": {
         "commonjs": "@youwol/fv-group",
@@ -56,6 +60,17 @@ const externals = {
             "rxjs_APIv6",
             "operators"
         ]
+    },
+    "@youwol/fv-code-mirror-editors/src/lib/typescript/ide.state": {
+        "commonjs": "@youwol/fv-code-mirror-editors/src/lib/typescript/ide.state",
+        "commonjs2": "@youwol/fv-code-mirror-editors/src/lib/typescript/ide.state",
+        "root": [
+            "@youwol/fv-code-mirror-editors_APIv02",
+            "src",
+            "lib",
+            "typescript",
+            "ide.state"
+        ]
     }
 }
 const exportedSymbols = {
@@ -66,6 +81,10 @@ const exportedSymbols = {
     "@youwol/flux-view": {
         "apiKey": "1",
         "exportedSymbol": "@youwol/flux-view"
+    },
+    "@youwol/cdn-client": {
+        "apiKey": "1",
+        "exportedSymbol": "@youwol/cdn-client"
     },
     "@youwol/http-clients": {
         "apiKey": "1",
@@ -80,7 +99,7 @@ const exportedSymbols = {
         "exportedSymbol": "@youwol/fv-button"
     },
     "@youwol/fv-code-mirror-editors": {
-        "apiKey": "01",
+        "apiKey": "02",
         "exportedSymbol": "@youwol/fv-code-mirror-editors"
     },
     "@youwol/fv-group": {
@@ -88,10 +107,39 @@ const exportedSymbols = {
         "exportedSymbol": "@youwol/fv-group"
     }
 }
+
+// eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
+const mainEntry : Object = {
+    "entryFile": "./lib/index.ts",
+    "loadDependencies": [
+        "@youwol/os-core",
+        "@youwol/flux-view",
+        "@youwol/http-clients",
+        "rxjs",
+        "@youwol/fv-button"
+    ]
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
+const secondaryEntries : Object = {
+    "context-menu-publish-app": {
+        "entryFile": "./lib/auxiliary-modules/publish-app/index.ts",
+        "loadDependencies": [
+            "@youwol/fv-code-mirror-editors",
+            "@youwol/fv-group",
+            "@youwol/cdn-client"
+        ],
+        "name": "context-menu-publish-app"
+    }
+}
+const entries = {
+     '@youwol/installers-flux': './lib/index.ts',
+    ...Object.values(secondaryEntries).reduce( (acc,e) => ({...acc, [`@youwol/installers-flux/${e.name}`]:e.entryFile}), {})
+}
 export const setup = {
     name:'@youwol/installers-flux',
         assetId:'QHlvdXdvbC9pbnN0YWxsZXJzLWZsdXg=',
-    version:'0.1.1',
+    version:'0.1.2-wip',
     shortDescription:"Collections of installers related to the flux application of YouWol",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/installers-flux',
     npmPackage:'https://www.npmjs.com/package/@youwol/installers-flux',
@@ -101,7 +149,46 @@ export const setup = {
     runTimeDependencies,
     externals,
     exportedSymbols,
+    entries,
     getDependencySymbolExported: (module:string) => {
         return `${exportedSymbols[module].exportedSymbol}_APIv${exportedSymbols[module].apiKey}`
+    },
+
+    installMainModule: ({cdnClient, installParameters}:{cdnClient, installParameters?}) => {
+        const parameters = installParameters || {}
+        const scripts = parameters.scripts || []
+        const modules = [
+            ...(parameters.modules || []),
+            ...mainEntry['loadDependencies'].map( d => `${d}#${runTimeDependencies.externals[d]}`)
+        ]
+        return cdnClient.install({
+            ...parameters,
+            modules,
+            scripts,
+        }).then(() => {
+            return window[`@youwol/installers-flux_APIv01`]
+        })
+    },
+    installAuxiliaryModule: ({name, cdnClient, installParameters}:{name: string, cdnClient, installParameters?}) => {
+        const entry = secondaryEntries[name]
+        const parameters = installParameters || {}
+        const scripts = [
+            ...(parameters.scripts || []),
+            `@youwol/installers-flux#0.1.2-wip~dist/@youwol/installers-flux/${entry.name}.js`
+        ]
+        const modules = [
+            ...(parameters.modules || []),
+            ...entry.loadDependencies.map( d => `${d}#${runTimeDependencies.externals[d]}`)
+        ]
+        if(!entry){
+            throw Error(`Can not find the secondary entry '${name}'. Referenced in template.py?`)
+        }
+        return cdnClient.install({
+            ...parameters,
+            modules,
+            scripts,
+        }).then(() => {
+            return window[`@youwol/installers-flux/${entry.name}_APIv01`]
+        })
     }
 }
