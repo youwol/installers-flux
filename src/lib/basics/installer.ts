@@ -7,6 +7,7 @@ import {
 import { FluxDependenciesView } from './flux-dependencies.view'
 import { AssetLightDescription } from '@youwol/os-core'
 import { mergeMap } from 'rxjs/operators'
+import { setup } from '../../auto-generated'
 
 export function contextMenuActions({ node, explorer, assetsGtwClient }) {
     return [
@@ -95,31 +96,18 @@ async function duplicateFluxProject(
         })
 }
 
+type PublishAppModule = typeof import('../auxiliary-modules/publish-app')
 async function publishFluxProject(
     projectNode,
     _explorer,
     assetsGtwClient: AssetsGateway.Client,
 ) {
-    // The modal will be displayed in the root document => we use '@youwol/cdn-client' of the root window
-    const { codeEditorsModule } = await window['@youwol/cdn-client'].install({
-        modules: ['@youwol/fv-code-mirror-editors', '@youwol/fv-group'],
-        scripts: [
-            'codemirror#5.52.0~mode/javascript.min.js',
-            'codemirror#5.52.0~addons/lint/lint.js',
-        ],
-        css: [
-            'codemirror#5.52.0~codemirror.min.css',
-            'codemirror#5.52.0~theme/blackboard.min.css',
-            'codemirror#5.52.0~addons/lint/lint.css',
-        ],
-        aliases: {
-            codeEditorsModule: '@youwol/fv-code-mirror-editors',
-            fvGroup: '@youwol/fv-group',
-        },
-    })
-    const publishAppMdl = await import('./publish-app.view')
-    publishAppMdl
-        .popupModal(codeEditorsModule)
+    const PublishAppModule: PublishAppModule =
+        await setup.installAuxiliaryModule({
+            name: 'context-menu-publish-app',
+            cdnClient: window['@youwol/cdn-client'],
+        })
+    PublishAppModule.popupModal()
         .pipe(
             mergeMap((body: FluxBackend.PublishApplicationBody) => {
                 return assetsGtwClient.flux.publishApplication$({
