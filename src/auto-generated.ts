@@ -1,10 +1,10 @@
 
 const runTimeDependencies = {
     "externals": {
-        "@youwol/os-core": "^0.1.2",
+        "@youwol/os-core": "^0.1.8",
         "@youwol/flux-view": "^1.0.3",
         "@youwol/cdn-client": "^1.0.2",
-        "@youwol/http-clients": "^1.0.2",
+        "@youwol/http-clients": "^2.0.5",
         "rxjs": "^6.5.5",
         "@youwol/fv-button": "^0.1.1",
         "@youwol/fv-code-mirror-editors": "^0.2.1",
@@ -31,7 +31,7 @@ const externals = {
     "@youwol/http-clients": {
         "commonjs": "@youwol/http-clients",
         "commonjs2": "@youwol/http-clients",
-        "root": "@youwol/http-clients_APIv1"
+        "root": "@youwol/http-clients_APIv2"
     },
     "rxjs": {
         "commonjs": "rxjs",
@@ -53,6 +53,14 @@ const externals = {
         "commonjs2": "@youwol/fv-group",
         "root": "@youwol/fv-group_APIv02"
     },
+    "rxjs/operators": {
+        "commonjs": "rxjs/operators",
+        "commonjs2": "rxjs/operators",
+        "root": [
+            "rxjs_APIv6",
+            "operators"
+        ]
+    },
     "@youwol/fv-code-mirror-editors/src/lib/typescript/ide.state": {
         "commonjs": "@youwol/fv-code-mirror-editors/src/lib/typescript/ide.state",
         "commonjs2": "@youwol/fv-code-mirror-editors/src/lib/typescript/ide.state",
@@ -62,14 +70,6 @@ const externals = {
             "lib",
             "typescript",
             "ide.state"
-        ]
-    },
-    "rxjs/operators": {
-        "commonjs": "rxjs/operators",
-        "commonjs2": "rxjs/operators",
-        "root": [
-            "rxjs_APIv6",
-            "operators"
         ]
     }
 }
@@ -87,7 +87,7 @@ const exportedSymbols = {
         "exportedSymbol": "@youwol/cdn-client"
     },
     "@youwol/http-clients": {
-        "apiKey": "1",
+        "apiKey": "2",
         "exportedSymbol": "@youwol/http-clients"
     },
     "rxjs": {
@@ -108,8 +108,7 @@ const exportedSymbols = {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
-const mainEntry : Object = {
+const mainEntry : {entryFile: string,loadDependencies:string[]} = {
     "entryFile": "./lib/index.ts",
     "loadDependencies": [
         "@youwol/os-core",
@@ -120,8 +119,7 @@ const mainEntry : Object = {
     ]
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
-const secondaryEntries : Object = {
+const secondaryEntries : {[k:string]:{entryFile: string, name: string, loadDependencies:string[]}}= {
     "context-menu-publish-app": {
         "entryFile": "./lib/auxiliary-modules/publish-app/index.ts",
         "loadDependencies": [
@@ -132,6 +130,7 @@ const secondaryEntries : Object = {
         "name": "context-menu-publish-app"
     }
 }
+
 const entries = {
      '@youwol/installers-flux': './lib/index.ts',
     ...Object.values(secondaryEntries).reduce( (acc,e) => ({...acc, [`@youwol/installers-flux/${e.name}`]:e.entryFile}), {})
@@ -139,7 +138,7 @@ const entries = {
 export const setup = {
     name:'@youwol/installers-flux',
         assetId:'QHlvdXdvbC9pbnN0YWxsZXJzLWZsdXg=',
-    version:'0.1.2',
+    version:'0.1.3-wip',
     shortDescription:"Collections of installers related to the flux application of YouWol",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/installers-flux',
     npmPackage:'https://www.npmjs.com/package/@youwol/installers-flux',
@@ -150,16 +149,20 @@ export const setup = {
     externals,
     exportedSymbols,
     entries,
+    secondaryEntries,
     getDependencySymbolExported: (module:string) => {
         return `${exportedSymbols[module].exportedSymbol}_APIv${exportedSymbols[module].apiKey}`
     },
 
-    installMainModule: ({cdnClient, installParameters}:{cdnClient, installParameters?}) => {
+    installMainModule: ({cdnClient, installParameters}:{
+        cdnClient:{install:(unknown) => Promise<Window>},
+        installParameters?
+    }) => {
         const parameters = installParameters || {}
         const scripts = parameters.scripts || []
         const modules = [
             ...(parameters.modules || []),
-            ...mainEntry['loadDependencies'].map( d => `${d}#${runTimeDependencies.externals[d]}`)
+            ...mainEntry.loadDependencies.map( d => `${d}#${runTimeDependencies.externals[d]}`)
         ]
         return cdnClient.install({
             ...parameters,
@@ -169,20 +172,24 @@ export const setup = {
             return window[`@youwol/installers-flux_APIv01`]
         })
     },
-    installAuxiliaryModule: ({name, cdnClient, installParameters}:{name: string, cdnClient, installParameters?}) => {
+    installAuxiliaryModule: ({name, cdnClient, installParameters}:{
+        name: string,
+        cdnClient:{install:(unknown) => Promise<Window>},
+        installParameters?
+    }) => {
         const entry = secondaryEntries[name]
+        if(!entry){
+            throw Error(`Can not find the secondary entry '${name}'. Referenced in template.py?`)
+        }
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/installers-flux#0.1.2~dist/@youwol/installers-flux/${entry.name}.js`
+            `@youwol/installers-flux#0.1.3-wip~dist/@youwol/installers-flux/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
             ...entry.loadDependencies.map( d => `${d}#${runTimeDependencies.externals[d]}`)
         ]
-        if(!entry){
-            throw Error(`Can not find the secondary entry '${name}'. Referenced in template.py?`)
-        }
         return cdnClient.install({
             ...parameters,
             modules,
@@ -190,5 +197,13 @@ export const setup = {
         }).then(() => {
             return window[`@youwol/installers-flux/${entry.name}_APIv01`]
         })
+    },
+    getCdnDependencies(name?: string){
+        if(name && !secondaryEntries[name]){
+            throw Error(`Can not find the secondary entry '${name}'. Referenced in template.py?`)
+        }
+        const deps = name ? secondaryEntries[name].loadDependencies : mainEntry.loadDependencies
+
+        return deps.map( d => `${d}#${runTimeDependencies.externals[d]}`)
     }
 }
