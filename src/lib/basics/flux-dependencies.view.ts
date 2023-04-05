@@ -1,12 +1,11 @@
 import { child$, VirtualDOM } from '@youwol/flux-view'
 import { Button } from '@youwol/fv-button'
+import { AssetsGateway, FluxBackend } from '@youwol/http-clients'
 import {
-    AssetsGateway,
-    FluxBackend,
     dispatchHTTPErrors,
     HTTPError,
     raiseHTTPErrors,
-} from '@youwol/http-clients'
+} from '@youwol/http-primitives'
 import { AssetLightDescription } from '@youwol/os-core'
 import {
     BehaviorSubject,

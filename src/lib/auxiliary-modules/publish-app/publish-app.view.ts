@@ -14,7 +14,7 @@ import {
     TypescriptModule,
 } from '@youwol/fv-code-mirror-editors'
 import { IdeState } from '@youwol/fv-code-mirror-editors/src/lib/typescript/ide.state'
-import { request$, onHTTPErrors } from '@youwol/http-clients'
+import { request$, onHTTPErrors } from '@youwol/http-primitives'
 import { LoadingScreenView, CdnEvent } from '@youwol/cdn-client'
 
 const defaultMetadata = {

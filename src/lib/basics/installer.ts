@@ -2,8 +2,8 @@ import {
     AssetsGateway,
     ExplorerBackend,
     FluxBackend,
-    raiseHTTPErrors,
 } from '@youwol/http-clients'
+import { raiseHTTPErrors } from '@youwol/http-primitives'
 import { FluxDependenciesView } from './flux-dependencies.view'
 import { AssetLightDescription } from '@youwol/os-core'
 import { mergeMap } from 'rxjs/operators'
