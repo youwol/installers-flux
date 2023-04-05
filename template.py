@@ -20,10 +20,11 @@ template = Template(
     dependencies=Dependencies(
         runTime=RunTimeDeps(
             externals={
-                "@youwol/os-core": "^0.1.2",
+                "@youwol/os-core": "^0.1.8",
                 "@youwol/flux-view": "^1.0.3",
                 "@youwol/cdn-client": "^1.0.2",
-                "@youwol/http-clients": "^1.0.2",
+                "@youwol/http-clients": "^2.0.5",
+                "@youwol/http-primitives": "^0.1.2",
                 "rxjs": "^6.5.5",
                 "@youwol/fv-button": "^0.1.1",
                 "@youwol/fv-code-mirror-editors": "^0.2.1",
