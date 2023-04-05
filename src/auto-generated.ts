@@ -5,6 +5,7 @@ const runTimeDependencies = {
         "@youwol/flux-view": "^1.0.3",
         "@youwol/cdn-client": "^1.0.2",
         "@youwol/http-clients": "^2.0.5",
+        "@youwol/http-primitives": "^0.1.2",
         "rxjs": "^6.5.5",
         "@youwol/fv-button": "^0.1.1",
         "@youwol/fv-code-mirror-editors": "^0.2.1",
@@ -33,6 +34,11 @@ const externals = {
         "commonjs2": "@youwol/http-clients",
         "root": "@youwol/http-clients_APIv2"
     },
+    "@youwol/http-primitives": {
+        "commonjs": "@youwol/http-primitives",
+        "commonjs2": "@youwol/http-primitives",
+        "root": "@youwol/http-primitives_APIv01"
+    },
     "rxjs": {
         "commonjs": "rxjs",
         "commonjs2": "rxjs",
@@ -53,14 +59,6 @@ const externals = {
         "commonjs2": "@youwol/fv-group",
         "root": "@youwol/fv-group_APIv02"
     },
-    "rxjs/operators": {
-        "commonjs": "rxjs/operators",
-        "commonjs2": "rxjs/operators",
-        "root": [
-            "rxjs_APIv6",
-            "operators"
-        ]
-    },
     "@youwol/fv-code-mirror-editors/src/lib/typescript/ide.state": {
         "commonjs": "@youwol/fv-code-mirror-editors/src/lib/typescript/ide.state",
         "commonjs2": "@youwol/fv-code-mirror-editors/src/lib/typescript/ide.state",
@@ -70,6 +68,14 @@ const externals = {
             "lib",
             "typescript",
             "ide.state"
+        ]
+    },
+    "rxjs/operators": {
+        "commonjs": "rxjs/operators",
+        "commonjs2": "rxjs/operators",
+        "root": [
+            "rxjs_APIv6",
+            "operators"
         ]
     }
 }
@@ -89,6 +95,10 @@ const exportedSymbols = {
     "@youwol/http-clients": {
         "apiKey": "2",
         "exportedSymbol": "@youwol/http-clients"
+    },
+    "@youwol/http-primitives": {
+        "apiKey": "01",
+        "exportedSymbol": "@youwol/http-primitives"
     },
     "rxjs": {
         "apiKey": "6",
@@ -138,7 +148,7 @@ const entries = {
 export const setup = {
     name:'@youwol/installers-flux',
         assetId:'QHlvdXdvbC9pbnN0YWxsZXJzLWZsdXg=',
-    version:'0.1.3-wip',
+    version:'0.1.3',
     shortDescription:"Collections of installers related to the flux application of YouWol",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/installers-flux',
     npmPackage:'https://www.npmjs.com/package/@youwol/installers-flux',
@@ -184,7 +194,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/installers-flux#0.1.3-wip~dist/@youwol/installers-flux/${entry.name}.js`
+            `@youwol/installers-flux#0.1.3~dist/@youwol/installers-flux/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),

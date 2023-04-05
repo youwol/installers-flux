@@ -1,7 +1,7 @@
 {
     "name": "@youwol/installers-flux",
     "description": "Collections of installers related to the flux application of YouWol",
-    "version": "0.1.3-wip",
+    "version": "0.1.3",
     "author": "greinisch@youwol.com",
     "homepage": "https://github.com/youwol/installers-flux#README.md",
     "main": "dist/@youwol/installers-flux.js",
@@ -53,6 +53,7 @@
         "@youwol/flux-view": "^1.0.3",
         "@youwol/cdn-client": "^1.0.2",
         "@youwol/http-clients": "^2.0.5",
+        "@youwol/http-primitives": "^0.1.2",
         "rxjs": "^6.5.5",
         "@youwol/fv-button": "^0.1.1",
         "@youwol/fv-code-mirror-editors": "^0.2.1",
